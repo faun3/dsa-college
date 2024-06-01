@@ -1,0 +1,6 @@
+*.zip
+*.sln
+.vs
+*.vcxproj
+*.vcxproj.*
+x64

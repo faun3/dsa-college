@@ -1,0 +1,13 @@
+29 1 "Mihai" 10 2 666.66 0.23
+38 3 "George" 4 5 1000.213 0
+45 2 "Andreea Spatiu" 21 1 2500 0.15
+41 5 "Ioana Popescu" 18 3 1850.50 0.12 
+73 1 "Alexandru Ionescu" 12 4 899.99 0.20 
+49 3 "Maria Marinescu" 35 2 3100.75 0.18 
+6 2 "Tudor Dobre" 8 6 1200 0 
+17 4 "Elena Constantin" 26 1 2350.25 0.11 
+34 1 "Stefan Vasile" 16 5 950.50 0.22 
+93 3 "Cristina Pop" 31 3 2800 0.16 
+1 5 "Andrei Matei" 15 4 1100.78 0 
+71 2 "Laura Florescu" 29 2 2650.33 0.14 
+44 4 "Victor Dumitrescu" 22 1 2200 0.10
