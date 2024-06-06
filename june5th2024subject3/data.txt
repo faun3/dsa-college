@@ -1,0 +1,5 @@
+06-06-2024 Markus 1.5 "Cavity Cleaning" 600
+06-06-2024 Anya 0.5 "Checkup" 300
+01-10-2024 Taylor 3.5 "Teeth Whitening" 1100
+15-09-2024 John 3.5 "Teeth Whitening" 1000
+01-10-2024 Dean 5.0 "Extraction" 1500
