@@ -1,0 +1,5 @@
+2 "Drone Delivery" "Amazon" 35 55 0.54
+3 "New JDK" "Oracle" 100 875 0.93
+1 "Speech Recognition" "OpenAI" 2 1234 0.28
+5 "Chat GPT" "OpenAI" 14 2134 0.68
+4 "Racing Game" "Ubisoft" 21 666 0.31
