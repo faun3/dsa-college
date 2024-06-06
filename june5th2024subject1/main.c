@@ -169,6 +169,7 @@ void getProjectArrWithBudgetsHigherThan(const Node* root, float filterBudget, Pr
         return;
     }
 
+    // no idea why the realloc solution doesn't work lol
     if (root->data.budget >= filterBudget) {
         if (*arr == NULL) {
             *arr = (Project*)malloc(sizeof(Project));
@@ -179,19 +180,21 @@ void getProjectArrWithBudgetsHigherThan(const Node* root, float filterBudget, Pr
             *sz = 1;
             (*arr)[*sz - 1] = cloneProject(root->data);
         } else {
-            (*sz)++;
 
             Project* tmp = (Project*)malloc(sizeof(Project) * (*sz));
+            // Project* tmp = realloc(*arr, (*sz) + 1);
+            (*sz) = (*sz) + 1;
             if (tmp == NULL) {
                 exit(1);
             }
-            for (int i = 0; i < (*sz) - 1; i++) {
-                tmp[i] = cloneProject((*arr)[i]);
-            }
-            tmp[*sz - 1] = cloneProject(root->data);
 
             for (int i = 0; i < (*sz) - 1; i++) {
-                freeProject((*arr)[i]);
+               tmp[i] = cloneProject((*arr)[i]);
+            }
+            tmp[(*sz) - 1] = cloneProject(root->data);
+
+            for (int i = 0; i < (*sz) - 1; i++) {
+               freeProject((*arr)[i]);
             }
             *arr = tmp;
         }
