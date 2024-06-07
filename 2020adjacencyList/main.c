@@ -1,4 +1,24 @@
 // https://github.com/snaake20/ase_info_an_2_sem_2/blob/main/SDD/exercitii_examen/host%20-%20LA%202xV%20-%201/Host.pdf
+
+// ------README--------
+// the value "666" in the data.txt file separates the end of the graph nodes
+// and the start of the edges and their weights
+// 
+// why did I do this?
+// lazyness
+// 
+// fscanf will read the 5 values that make up a Host but it doesn't know how many it just read
+// until it reads then (duh)
+// when fscanf runs out of Host lines, it will read the first value (which should go in "to")
+// and then exit the loop
+// 
+// adding a dummy integer value will still break the loop and it will allow me
+// to keep using fscanf instead of reading into a buffer and parsing tokens manually
+// 
+// because this is an exam and the only thing that matters is the file being parsed
+// this is actually okay
+// but the code that reads the file is truly horrible in any other case
+// -------README END-------
 #define _CRT_SECURE_NO_WARNINGS
 
 #include <stdio.h>
@@ -143,21 +163,128 @@ void parseFile(PrimaryNode** head, const char* filename) {
     int id, port, uptime;
     char name[256], ip[256];
 
-    while (fscanf(f, "%d \"%[^\"]\" \"%[^\"]\" %d %d\n", &id, name, ip, &port, &uptime) == 5) {
+    int reads;
+    while (fscanf(f, "%d \"%[^\"]\" \"%[^\"]\" %d %d", &id, name, ip, &port, &uptime) == 5) {
         Host h = makeHost(id, name, ip, port, uptime);
         appendToPrimaryList(head, h);
     }
+
     int from, to, weight;
     while (fscanf(f, "%d %d %d", &from, &to, &weight) == 3) {
-        printf("%d %d %d\n", to, from, weight);
         addEdge(*head, from, to, weight);
     }
 
     fclose(f);
 }
 
+typedef struct ArrEl {
+    PrimaryNode* source;
+    PrimaryNode* dest;
+} ArrEl;
+
+ArrEl* buildArrWithEdgesWithWeightOver(const PrimaryNode* graph, int weigthFilter, int* sz) {
+    ArrEl* arr = NULL;
+    *sz = 0;
+
+    PrimaryNode* it = graph;
+    while (it != NULL) {
+        SecondaryNode* sit = it->adjacents;
+        while (sit != NULL) {
+            if (sit->weight > weigthFilter) {
+                (*sz)++;
+                ArrEl* tmp = realloc(arr, sizeof(ArrEl) * (*sz));
+                if (tmp == NULL) {
+                    exit(1);
+                }
+
+                ArrEl newVal = {
+                    it,
+                    sit->info
+                };
+                tmp[(*sz) - 1] = newVal;
+
+                arr = tmp;
+            }
+            sit = sit->next;
+        }
+        it = it->next;
+    }
+
+    return arr;
+}
+
+Host* getHostsWithUptimeLessOrEqualTo(const PrimaryNode* graph, int uptimeFilter, int* sz) {
+    Host* arr = NULL;
+    *sz = 0;
+
+    PrimaryNode* it = graph;
+    while (it != NULL) {
+        if (it->data.uptime <= uptimeFilter) {
+            (*sz)++;
+            Host* tmp = realloc(arr, sizeof(Host) * (*sz));
+            if (tmp == NULL) {
+                exit(1);
+            }
+
+            tmp[(*sz) - 1] = cloneHost(it->data);
+
+            arr = tmp;
+        }
+        it = it->next;
+    }
+
+    return arr;
+}
+
+freeGraph(PrimaryNode** graph) {
+    if (*graph == NULL) return;
+
+    PrimaryNode* it = NULL;
+    while (*graph != NULL) {
+        it = (*graph);
+        SecondaryNode* sit;
+        while (it->adjacents != NULL) {
+            sit = it->adjacents;
+            it->adjacents = it->adjacents->next;
+            free(sit);
+        }
+        (*graph) = (*graph)->next;
+        free(it->data.ip);
+        free(it->data.name);
+        free(it);
+    }
+}
+
+// 4.
+// I actually don't understand what they want me to filter the array by
+
 int main() {
     PrimaryNode* graph = NULL;
     parseFile(&graph, "data.txt");
     printPrimaryList(graph);
+
+    ArrEl* arr = NULL;
+    int sz = 0;
+
+    arr = buildArrWithEdgesWithWeightOver(graph, 3, &sz);
+
+    printf("\nArray:\n");
+    for (int i = 0; i < sz; i++) {
+        printf("%d - %d\n", arr[i].source->data.id, arr[i].dest->data.id);
+    }
+
+    free(arr);
+
+    Host* uptimesArr = NULL;
+    int uptimesLen = 0;
+    int uptimeFilter = 201;
+
+    uptimesArr = getHostsWithUptimeLessOrEqualTo(graph, uptimeFilter, &uptimesLen);
+    printf("\nArray of hosts with uptime less than or equal to %d:\n", uptimeFilter);
+    for (int i = 0; i < uptimesLen; i++) {
+        printHost(uptimesArr[i]);
+    }
+    free(uptimesArr);
+
+    freeGraph(&graph);
 }
