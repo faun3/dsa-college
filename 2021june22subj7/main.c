@@ -1,4 +1,4 @@
-// https://github.com/snaake20/ase_info_an_2_sem_2/blob/main/SDD/exercitii_examen/spectacol%20-%202xBST%202xV%20-%201/Bilet7.pdf
+﻿// https://github.com/snaake20/ase_info_an_2_sem_2/blob/main/SDD/exercitii_examen/spectacol%20-%202xBST%202xV%20-%201/Bilet7.pdf
 
 #define _CRT_SECURE_NO_WARNINGS
 
@@ -7,6 +7,9 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <limits.h>
+
+#include <io.h>
+#include <fcntl.h>
 
 typedef struct Show {
     int id;
@@ -68,6 +71,61 @@ void bstInsert(Node** root, Show s) {
     }
 }
 
+int subtreeHeight(const Node* root) {
+    if (!root) {
+        return 0;
+    }
+
+    int lHeight = subtreeHeight(root->left);
+    int rHeight = subtreeHeight(root->right);
+    if (lHeight > rHeight) {
+        return 1 + lHeight;
+    } else {
+        return 1 + rHeight;
+    }
+    exit(666);
+}
+
+int balanceDiff(const Node* root) {
+    if (!root) {
+        return 0;
+    } else {
+        return subtreeHeight(root->left) - subtreeHeight(root->right);
+    }
+}
+
+void rotateLeft(Node** root) {
+    Node* aux = (*root)->right;
+    (*root)->right = aux->left;
+    aux->left = *root;
+    *root = aux;
+}
+
+void rotateRight(Node** root) {
+    Node* aux = (*root)->left;
+    (*root)->left = aux->right;
+    aux->right = *root;
+    *root = aux;
+}
+
+void avlInsert(Node** root, Show s) {
+    bstInsert(root, s);
+    
+    if (balanceDiff(*root) == 2) {
+        if (balanceDiff((*root)->left) == -1) {
+            rotateLeft(&(*root)->left);
+        }
+        rotateRight(root);
+    }
+
+    if (balanceDiff(*root) == -2) {
+        if (balanceDiff((*root)->left) == 1) {
+            rotateRight(&(*root)->left);
+        }
+        rotateLeft(root);
+    }
+}
+
 void parseFile(Node** root, const char* filename) {
     FILE* f = fopen(filename, "r");
     if (!f) {
@@ -79,7 +137,7 @@ void parseFile(Node** root, const char* filename) {
     float price;
     bool isRecorded;
     while (fscanf(f, "%d %f %s %s %d %hhu", &id, &price, name, date, &seats, &isRecorded) == 6) {
-        bstInsert(root, makeShow(id, price, name, date, seats, isRecorded));
+        avlInsert(root, makeShow(id, price, name, date, seats, isRecorded));
     }
 
     fclose(f);
@@ -95,6 +153,17 @@ void inorderPrint(const Node* root) {
     inorderPrint(root->right);
 }
 
+void preorderPrint(const Node* root) {
+    if (!root) {
+        printf("NULL\n");
+        return;
+    }
+
+    printShow(root->data);
+    preorderPrint(root->left);
+    preorderPrint(root->right);
+}
+
 void freeTree(Node** root) {
     if (*root == NULL) {
         return;
@@ -106,11 +175,122 @@ void freeTree(Node** root) {
     free(*root);
 }
 
+typedef struct ListNode {
+    struct ListNode* next;
+    struct ListNode* prev;
+    Node* data;
+} ListNode;
+
+typedef struct List {
+    ListNode* head;
+    ListNode* tail;
+} List;
+
+void pushLeft(List* list, Node* data) {
+    ListNode* newNode = (ListNode*)malloc(sizeof(ListNode));
+    if (newNode == NULL) {
+        exit(1);
+    }
+
+    newNode->prev = NULL;
+    newNode->data = data;
+
+    if (!list->head && !list->tail) {
+        list->head = newNode;
+        list->tail = newNode;
+    } else {
+        newNode->next = list->head;
+        list->head->prev = newNode;
+        list->head = newNode;
+    }
+}
+
+Node* popRight(List* list) {
+    if (!list->tail && !list->head) {
+        return NULL;
+    } else if (list->head == list->tail) {
+        Node* val = list->tail->data;
+        list->tail = NULL;
+        list->head = NULL;
+        return val;
+    } else {
+        Node* val = list->tail->data;
+        ListNode* deleteMe = list->tail;
+        list->tail = list->tail->prev;
+        free(deleteMe);
+        return val;
+    }
+}
+
+Node* popLeft(List* list) {
+    if (!list->tail && !list->head) {
+        return NULL;
+    } else if (list->head == list->tail) {
+        Node* val = list->head->data;
+        list->tail = NULL;
+        list->head = NULL;
+        return val;
+    } else {
+        Node* val = list->head->data;
+        ListNode* deleteMe = list->head;
+        list->head = list->head->next;
+        free(deleteMe);
+        return val;
+    }
+}
+
+Node* front(List queue) {
+    return queue.head;
+}
+
+void levelOrderPrint(const Node* root) {
+    List queue = {
+        NULL, NULL
+    };
+
+    pushLeft(&queue, root);
+    while (front(queue)) {
+        Node* current = popRight(&queue);
+
+        printShow(current->data);
+
+        if (current->left) {
+            pushLeft(&queue, current->left);
+        }
+
+        if (current->right) {
+            pushLeft(&queue, current->right);
+        }
+    }
+}
+
+void dfs(const Node* root) {
+    List stack = { NULL, NULL };
+    pushLeft(&stack, root);
+
+    while (stack.head != NULL) {
+        Node* current = popLeft(&stack);
+
+        printShow(current->data);
+
+        if (current->left) {
+            pushLeft(&stack, current->left);
+        }
+
+        if (current->right) {
+            pushLeft(&stack, current->right);
+        }
+    }
+}
+
 int main() {
+
     Node* root = NULL;
     parseFile(&root, "data.txt");
 
-    inorderPrint(root);
+    dfs(root);
+
+    printf("Diff: %d\n", balanceDiff(root));
 
     freeTree(&root);
 }
