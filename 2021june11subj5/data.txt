@@ -1,0 +1,7 @@
+100 "Michael Smith" 25000
+200 "Anne D" 35000
+200 "Chris Redfield" 45000
+200 "Carlos Vargas" 38000
+100 "Sarah D" 65000
+100 "Tony Daniels" 55000
+100 "Steve Jobs" 100000
