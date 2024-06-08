@@ -218,6 +218,21 @@ freeTree(Node** root) {
     }
 }
 
+void splitIntoOddsAndEvens(Node* root, Node** rootOdds, Node** rootEvens) {
+    if (root == NULL) {
+        return;
+    }
+
+    if (root->data.id % 2 == 0) {
+        bstInsert(rootOdds, root->data);
+    } else {
+        bstInsert(rootEvens, root->data);
+    }
+
+    splitIntoOddsAndEvens(root->left, rootOdds, rootEvens);
+    splitIntoOddsAndEvens(root->right, rootOdds, rootEvens);
+}
+
 int main() {
     Node* root = NULL;
 
@@ -239,7 +254,20 @@ int main() {
     preorderPrint(root);
     printf("\n");
 
+    Node* rootEvens = NULL;
+    Node* rootOdds = NULL;
+
+    splitIntoOddsAndEvens(root, &rootOdds, &rootEvens);
+
+    printf("\nOdds:\n");
+    preorderPrint(rootOdds);
+
+    printf("\nEvens:\n");
+    preorderPrint(rootEvens);
+
     freeTree(&root);
+    freeTree(&rootOdds);
+    freeTree(&rootEvens);
 
     _CrtDumpMemoryLeaks();
 }
