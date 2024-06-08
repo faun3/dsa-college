@@ -26,6 +26,8 @@
 #include <string.h>
 #include <stdbool.h>
 
+#include <crtdbg.h>
+
 typedef struct {
     int id;
     char* name;
@@ -255,8 +257,121 @@ freeGraph(PrimaryNode** graph) {
     }
 }
 
-// 4.
-// I actually don't understand what they want me to filter the array by
+typedef struct ListNode {
+    PrimaryNode* data;
+    struct ListNode* prev;
+    struct ListNode* next;
+} ListNode;
+
+typedef struct Deque {
+    ListNode* head;
+    ListNode* tail;
+} Deque;
+
+void pushLeft(Deque* list, PrimaryNode* data) {
+    ListNode* newNode = (ListNode*)malloc(sizeof(ListNode));
+    if (newNode == NULL) {
+        exit(1);
+    }
+
+    newNode->prev = NULL;
+    newNode->data = data;
+
+    if (list->head == NULL && list->tail == NULL) {
+        newNode->next = NULL;
+        list->head = newNode;
+        list->tail = newNode;
+    } else {
+        newNode->next = list->head;
+        list->head->prev = newNode;
+        list->head = newNode;
+    }
+}
+
+void pushRight(Deque* list, PrimaryNode* data) {
+    ListNode* newNode = (ListNode*)malloc(sizeof(ListNode));
+    if (newNode == NULL) {
+        exit(1);
+    }
+
+    newNode->next = NULL;
+    newNode->data = data;
+
+    if (!list->head && !list->tail) {
+        newNode->prev = NULL;
+        list->head = newNode;
+        list->tail = newNode;
+    } else {
+        newNode->prev = list->tail;
+        list->tail->next = newNode;
+        list->tail = newNode;
+    }
+}
+
+PrimaryNode* popLeft(Deque* list) {
+    PrimaryNode* tmp = NULL;
+    if (!list->head) {
+        return tmp;
+    } else {
+        tmp = list->head->data;
+        ListNode* deleteMe = list->head;
+        list->head = list->head->next;
+        if (list->head == NULL) {
+            list->tail = NULL;
+        }
+        free(deleteMe);
+    }
+    return tmp;
+}
+
+void graphDFS(const PrimaryNode* graph) {
+    Deque stack = { NULL, NULL };
+
+    // hacky but I don't want to waste too much time allocating & freeing
+    bool visited[7] = { 0 };
+
+    pushLeft(&stack, graph);
+
+    while (stack.head) {
+        PrimaryNode* currentNode = popLeft(&stack);
+        if (visited[(currentNode->data.id / 100) - 1] == 0) {
+            printHost(currentNode->data);
+            visited[(currentNode->data.id / 100) - 1] = 1;
+        }
+
+        if (currentNode->adjacents) {
+            SecondaryNode* it = currentNode->adjacents;
+            while (it != NULL) {
+                pushLeft(&stack, it->info);
+                it = it->next;
+            }
+        }
+    }
+}
+
+void graphBFS(const PrimaryNode* graph) {
+    Deque queue = { NULL, NULL };
+
+    // dirty hack again
+    bool visited[7] = {false};
+
+    pushRight(&queue, graph);
+    while (queue.head != NULL) {
+        PrimaryNode* currentNode = popLeft(&queue);
+        if (visited[(currentNode->data.id / 100) - 1] == false) {
+            printHost(currentNode->data);
+            visited[(currentNode->data.id / 100) - 1] = true;
+        }
+
+        if (currentNode->adjacents) {
+            SecondaryNode* it = currentNode->adjacents;
+            while (it != NULL) {
+                pushRight(&queue, it->info);
+                it = it->next;
+            }
+        }
+    }
+}
 
 int main() {
     PrimaryNode* graph = NULL;
@@ -286,5 +401,13 @@ int main() {
     }
     free(uptimesArr);
 
+    printf("\nDFS:\n");
+    graphDFS(graph);
+
+    printf("\nBFS:\n");
+    graphBFS(graph);
+
     freeGraph(&graph);
+
+    _CrtDumpMemoryLeaks();
 }
