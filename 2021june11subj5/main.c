@@ -200,6 +200,26 @@ void pushLeft(Deque* d, Angajat a) {
     }
 }
 
+Angajat* popLeft(Deque* d) {
+    if (d->head == NULL) {
+        return NULL;
+    }
+
+    ListNode* tmp = d->head;
+    Angajat returnMe = tmp->data;
+
+    if (d->tail == d->head) {
+        d->tail = NULL;
+        d->head = NULL;
+    } else {
+        d->head = d->head->next;
+        d->head->prev = NULL;
+    }
+
+    free(tmp);
+    return &returnMe;
+}
+
 Angajat* popRight(Deque* d) {
     if (d->tail == NULL) {
         return NULL;
@@ -272,6 +292,22 @@ int main() {
     aa = popRight(&dep100);
     printAngajat(*aa);
     aa = popRight(&dep100);
+    if (aa == NULL) {
+        printf("Can't pop anymore!\n");
+    }
+
+    dep100 = empsFromDep(list, 100);
+
+    printf("\nPopping all queue elements...\n");
+    aa = popLeft(&dep100);
+    printAngajat(*aa);
+    aa = popLeft(&dep100);
+    printAngajat(*aa);
+    aa = popLeft(&dep100);
+    printAngajat(*aa);
+    aa = popLeft(&dep100);
+    printAngajat(*aa);
+    aa = popLeft(&dep100);
     if (aa == NULL) {
         printf("Can't pop anymore!\n");
     }
