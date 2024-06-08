@@ -240,6 +240,8 @@ Angajat* popRight(Deque* d) {
     return &returnMe;
 }
 
+
+
 Deque empsFromDep(PrimaryNode* list, int depIdFilter) {
     Deque d = { NULL, NULL };
 
@@ -257,6 +259,24 @@ Deque empsFromDep(PrimaryNode* list, int depIdFilter) {
     }
 
     return d;
+}
+
+SecondaryNode* crazyness(PrimaryNode** list) {
+    if (*list == NULL) {
+        return NULL;
+    }
+
+    PrimaryNode* tmp = *list;
+    SecondaryNode* val = tmp->employees;
+
+    if ((*list)->next == NULL) {
+        *list = NULL;
+    } else {
+        *list = (*list)->next;
+    }
+
+    free(tmp);
+    return val;
 }
 
 // annoying to do
@@ -311,6 +331,8 @@ int main() {
     if (aa == NULL) {
         printf("Can't pop anymore!\n");
     }
+
+    SecondaryNode* ww = crazyness(&list);
 
     freeListOfLists(&list);
     free(emps);
