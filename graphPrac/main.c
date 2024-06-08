@@ -206,16 +206,14 @@ PrimaryNode* popRight(Deque* deq) {
 
     ListNode* tmp = deq->tail;
     PrimaryNode* val = tmp->data;
-    free(tmp);
     if (deq->head == deq->tail) {
         deq->head = NULL;
         deq->tail = NULL;
     } else {
         deq->tail = deq->tail->prev;
-        if (deq->tail != NULL) {
-            deq->tail->next = NULL;
-        }
     }
+    free(tmp);
+
     return val;
 }
 
@@ -263,9 +261,17 @@ void graphBfs(const PrimaryNode* graph) {
     pushLeft(&d, graph);
     while (d.head) {
         PrimaryNode* currentNode = popRight(&d);
-        int idx = currentNode->data.id;
-        if (visited[idx] == false) {
-            visited[idx] = true;
+        if (visited[currentNode->data.id - 1] == false) {
+            printf("%d ", currentNode->data.id);
+            visited[currentNode->data.id - 1] = true;
+        }
+
+        SecondaryNode* it = currentNode->adjacents;
+        while (it != NULL) {
+            if (visited[it->info->data.id - 1] == false) {
+                pushLeft(&d, it->info);
+            }
+            it = it->next;
         }
     }
 
@@ -280,5 +286,7 @@ int main() {
 
     printf("\nDFS:\n");
     graphDfs(graph);
+    printf("\nBFS:\n");
+    graphBfs(graph);
     freeGraph(&graph);
 }
