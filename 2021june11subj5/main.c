@@ -206,7 +206,7 @@ Angajat* popRight(Deque* d) {
     }
 
     ListNode* tmp = d->tail;
-    Angajat* returnMe = &(tmp->data);
+    Angajat returnMe = tmp->data;
 
     if (d->head == d->tail) {
         d->head = NULL;
@@ -217,7 +217,7 @@ Angajat* popRight(Deque* d) {
     }
 
     free(tmp);
-    return returnMe;
+    return &returnMe;
 }
 
 Deque empsFromDep(PrimaryNode* list, int depIdFilter) {
@@ -261,6 +261,20 @@ int main() {
     Deque dep100 = empsFromDep(list, 100);
     printf("\nQueued emps in dep 100:\n");
     printDeque(&dep100);
+
+    printf("\nPopping all queue elements...\n");
+    Angajat* aa = popRight(&dep100);
+    printAngajat(*aa);
+    aa = popRight(&dep100);
+    printAngajat(*aa);
+    aa = popRight(&dep100);
+    printAngajat(*aa);
+    aa = popRight(&dep100);
+    printAngajat(*aa);
+    aa = popRight(&dep100);
+    if (aa == NULL) {
+        printf("Can't pop anymore!\n");
+    }
 
     freeListOfLists(&list);
     free(emps);
