@@ -114,6 +114,26 @@ void avlInsert(Node** root, Data d) {
     }
 }
 
+void rebalance(Node** root) {
+    if (*root == NULL) {
+        return;
+    }
+
+    if (heightDiff(*root) == 2) {
+        if (heightDiff((*root)->left) == -1) {
+            rotateLeft(&(*root)->left);
+        }
+        rotateRight(root);
+    }
+
+    if (heightDiff(*root) == -2) {
+        if (heightDiff((*root)->right == 1)) {
+            rotateRight(&(*root)->right);
+        }
+        rotateLeft(root);
+    }
+}
+
 void preorderPrint(const Node* root) {
     if (root == NULL) {
         return;
@@ -166,7 +186,6 @@ Node* bstDeleteNode(Node* root, int deleteId) {
     return root;
 }
 
-// TODO:
 Node* avlDeleteNode(Node* root, int deleteId) {
     if (root == NULL) {
         return root;
@@ -174,19 +193,23 @@ Node* avlDeleteNode(Node* root, int deleteId) {
 
     if (deleteId < root->data.id) {
         root->left = avlDeleteNode(root->left, deleteId);
+        rebalance(&root->left);
         return root;
     } else if (deleteId > root->data.id) {
         root->right = avlDeleteNode(root->right, deleteId);
+        rebalance(&root->right);
         return root;
     }
 
     if (root->left == NULL) {
         Node* tmp = root->right;
         free(root);
+        rebalance(&tmp);
         return tmp;
     } else if (root->right == NULL) {
         Node* tmp = root->left;
         free(root);
+        rebalance(&tmp);
         return tmp;
     }
 
@@ -254,7 +277,7 @@ int main() {
     preorderPrint(root);
     printf("\n");
 
-    Node* rootEvens = NULL;
+    /*Node* rootEvens = NULL;
     Node* rootOdds = NULL;
 
     splitIntoOddsAndEvens(root, &rootOdds, &rootEvens);
@@ -263,11 +286,15 @@ int main() {
     preorderPrint(rootOdds);
 
     printf("\nEvens:\n");
-    preorderPrint(rootEvens);
+    preorderPrint(rootEvens);*/
+
+    root = avlDeleteNode(root, 4);
+
+    preorderPrint(root);
 
     freeTree(&root);
-    freeTree(&rootOdds);
-    freeTree(&rootEvens);
+    //freeTree(&rootOdds);
+    //freeTree(&rootEvens);
 
     _CrtDumpMemoryLeaks();
 }
