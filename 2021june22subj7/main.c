@@ -283,6 +283,60 @@ void dfs(const Node* root) {
     }
 }
 
+// the inorder successor is the SMALLEST node that is still LARGER than the root
+// it's very easy to check this for correctness:
+//
+// after an inorderPrint, the root's inorder successor should be printed right after the root
+// note: in a BST, the inorderPrint will print the id's in increasing order
+Node* inorderSuccessor(Node* root) {
+    if (root == NULL) return NULL;
+
+    Node* current = root->right;
+    while (current != NULL && current->left != NULL) {
+        current = current->left;
+    }
+
+    return current;
+}
+
+void deleteNode(Node** root, int deleteId) {
+    if (*root == NULL) return;
+
+    if (deleteId < (*root)->data.id) {
+        deleteNode(&(*root)->left, deleteId);
+    } else if (deleteId > (*root)->data.id) {
+        deleteNode(&(*root)->right, deleteId);
+    } else {
+        // deletion happens on this branch
+
+        if ((*root)->left == NULL || (*root)->right == NULL) {
+            // 0 or 1 child case
+
+            // get the replacement child
+            Node* replace = (*root)->left != NULL ? (*root)->left : (*root)->right;
+
+            // only used for freeing
+            Node* tmp = *root;
+
+            // replace the root
+            *root = replace;
+
+            free(tmp->data.name);
+            free(tmp);
+        } else {
+            // both children case
+            // we need to get the inorded successor and replace the current root with that
+            Node* replacement = inorderSuccessor(*root);
+            (*root)->data = cloneShow(replacement->data);
+            deleteNode(&(*root)->right, replacement->data.id);
+        }
+    }
+
+    // add this code if deleting from an AVL tree
+    // if (*root == NULL) return;
+    // rebalance(root);
+}
+
 int main() {
 
     Node* root = NULL;
@@ -291,6 +345,14 @@ int main() {
     dfs(root);
 
     printf("Diff: %d\n", balanceDiff(root));
+
+    printf("\nLevel order:\n");
+    levelOrderPrint(root);
+
+    deleteNode(&root, 5);
+
+    printf("\nLevel order after node deletion:\n");
+    levelOrderPrint(root);
 
     freeTree(&root);
 }
