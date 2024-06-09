@@ -1,0 +1,10 @@
+1 "The Bucharest Grand" 150 1 "Popescu Mihai" "09-06-2024 : 12-06-2024" 895.99
+2 "Hotel Cismigiu" 200 2 "Maria Ionescu" "09-06-2024 : 12-06-2024" 301.45
+3 "The Old Town Inn" 167 2 "Georgeta Pop" "09-06-2024 : 12-06-2024" 299.95
+4 "The Palace View Suites" 211 3 "Andrei Lazar" "10-06-2024 : 15-06-2024" 605.95
+5 "The Romanian Retreat" 85 1 "Silviu Gherman" "10-06-2024 : 15-06-2024" 400.00
+6 "The Calea Victoriei Hotel" 91 1 "Valeriu Sterian" "10-06-2024 : 15-06-2024" 725.85
+7 "Casa Lipscani" 44 1 "Sergiu Nicolaescu" "09-06-2024 : 12-06-2024" 300.00
+8 "The Parliament Panorama" 177 2 "Radu Jude" "21-06-2024 : 30-06-2024" 800.25
+9 "The Danube Riverfront" 63 1 "Tudor Vadim" "21-06-2024 : 30-06-2024" 795.95
+10 "The Bucharest Boutique Hotel" 200 1 "Traian Basescu" "21-06-2024 : 30-06-2024" 699.99
