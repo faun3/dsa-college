@@ -213,6 +213,25 @@ void updateTickets(List* list, int filterId, int newTickets) {
     }
 }
 
+TrainCar pop(TrainCar* heap, int* sz) {
+    if (*sz == 0) {
+        TrainCar t = { 0, NULL, 0, 0 };
+        return t;
+    }
+
+    TrainCar aux = heap[0];
+    heap[0] = heap[(*sz) - 1];
+    heap[(*sz) - 1] = aux;
+
+    TrainCar value = heap[(*sz) - 1];
+
+    (*sz)--;
+
+    heapify(heap, *sz, 0);
+
+    return value;
+}
+
 int main() {
     List list = { NULL, NULL };
     parseFile(&list, "data.txt");
@@ -235,6 +254,51 @@ int main() {
 
     buildHeap(arr, sz);
     printf("\nHeap:\n");
+    for (int i = 0; i < sz; i++) {
+        printTrainCar(arr[i]);
+    }
+
+    TrainCar top = pop(arr, &sz);
+    printf("\nPopped head:\n");
+    printTrainCar(top);
+
+    printf("\nHeap after pop:\n");
+    for (int i = 0; i < sz; i++) {
+        printTrainCar(arr[i]);
+    }
+
+    top = pop(arr, &sz);
+    printf("\nPopped head:\n");
+    printTrainCar(top);
+
+    printf("\nHeap after pop:\n");
+    for (int i = 0; i < sz; i++) {
+        printTrainCar(arr[i]);
+    }
+
+    top = pop(arr, &sz);
+    printf("\nPopped head:\n");
+    printTrainCar(top);
+
+    printf("\nHeap after pop:\n");
+    for (int i = 0; i < sz; i++) {
+        printTrainCar(arr[i]);
+    }
+
+    top = pop(arr, &sz);
+    printf("\nPopped head:\n");
+    printTrainCar(top);
+
+    printf("\nHeap after pop:\n");
+    for (int i = 0; i < sz; i++) {
+        printTrainCar(arr[i]);
+    }
+
+    top = pop(arr, &sz);
+    printf("\nPopped head:\n");
+    printTrainCar(top);
+
+    printf("\nHeap after pop:\n");
     for (int i = 0; i < sz; i++) {
         printTrainCar(arr[i]);
     }
